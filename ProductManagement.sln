@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RestaurantManagement", "RestaurantManagement\RestaurantManagement.csproj", "{FC9DCA36-FFD1-4507-8CD2-D9D3652B6415}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductManagement", "ProductManagement\ProductManagement.csproj", "{FC9DCA36-FFD1-4507-8CD2-D9D3652B6415}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
