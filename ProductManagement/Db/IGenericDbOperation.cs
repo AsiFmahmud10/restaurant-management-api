@@ -1,12 +1,15 @@
 using System.Linq.Expressions;
 
-namespace ProductManagement.db;
+namespace ProductManagement.Db;
 
 public interface IGenericDbOperation<T> where T : class
 {
     void save(T entity);
-    T? findById(int id);
+    void Update(T entity);
+    T? FindById(Guid id);
     ICollection<T> find(Expression<Func<T, bool>> predicate);
     ICollection<T> findAll(ICollection<int> idList);
-    void  delete(T entity);
+    void  Delete(T entity);
+    T? FirstOrDefault(Expression<Func<T, bool>> predicate);
+
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ProductManagement.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDb : Migration
+    public partial class Init_Db : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -168,6 +168,7 @@ namespace ProductManagement.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Value = table.Column<string>(type: "text", nullable: false),
+                    ValidUntil = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     TokenType = table.Column<int>(type: "integer", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     ModifiedBy = table.Column<string>(type: "text", nullable: false),
