@@ -1,4 +1,8 @@
-namespace ProductManagement.entity;
+namespace ProductManagement.Role;
+
+using Db;
+
+
 
 public class Role :  BaseEntity
 {

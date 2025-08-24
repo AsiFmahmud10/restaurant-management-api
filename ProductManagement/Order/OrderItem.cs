@@ -1,4 +1,6 @@
-namespace ProductManagement.entity;
+namespace ProductManagement.Order;
+using Product;
+using Db;
 
 public class OrderItem :  BaseEntity
 {

@@ -1,4 +1,4 @@
-namespace ProductManagement;
+namespace ProductManagement.Order;
 
 public enum OrderStatus
 {

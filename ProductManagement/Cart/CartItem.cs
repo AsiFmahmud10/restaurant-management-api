@@ -1,5 +1,7 @@
-namespace ProductManagement.entity;
+using ProductManagement.Db;
 
+namespace ProductManagement.Cart;
+using Product;
 public class CartItem : BaseEntity
 {
     public Guid CartId { get; set; }

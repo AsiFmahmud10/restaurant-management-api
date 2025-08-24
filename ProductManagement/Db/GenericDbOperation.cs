@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
-
-namespace ProductManagement.db;
+namespace ProductManagement.Db;
 
 public class GenericDbOperation<T>(ApplicationDbContext dbContext) :  IGenericDbOperation<T> where T : class
 {
@@ -9,8 +8,13 @@ public class GenericDbOperation<T>(ApplicationDbContext dbContext) :  IGenericDb
         dbContext.Set<T>().Add(entity);
         dbContext.SaveChanges();
     }
+    public void Update(T entity)
+    {
+        dbContext.Set<T>().Update(entity);
+        dbContext.SaveChanges();
+    }
 
-    public T? findById(int id)
+    public T? FindById(Guid id)
     {
         return dbContext.Set<T>().Find(id);
     }
@@ -20,12 +24,17 @@ public class GenericDbOperation<T>(ApplicationDbContext dbContext) :  IGenericDb
         return dbContext.Set<T>().Where(predicate).ToList();
     }
 
+    public T? FirstOrDefault( Expression<Func<T,bool>> predicate)
+    {
+        return dbContext.Set<T>().FirstOrDefault(predicate);
+    }
+
     public ICollection<T> findAll(ICollection<int> idList)
     {
         return null;
     }
 
-    public void delete(T entity)
+    public void Delete(T entity)
     {
         dbContext.Set<T>().Remove(entity);
         dbContext.SaveChanges();

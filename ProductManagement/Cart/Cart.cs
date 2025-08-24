@@ -1,4 +1,6 @@
-namespace ProductManagement.entity;
+using ProductManagement.Db;
+
+namespace ProductManagement.Cart;
 
 public class Cart : BaseEntity
 {   

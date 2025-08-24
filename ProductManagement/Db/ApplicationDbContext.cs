@@ -1,8 +1,13 @@
+using ProductManagement.Product;
+
+namespace ProductManagement.Db;
 using Microsoft.EntityFrameworkCore;
-using ProductManagement.entity;
-
-namespace ProductManagement.db;
-
+using Cart;
+using User;
+using Role;
+using Order;
+using Product;
+using Token;
 public class ApplicationDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }
@@ -13,6 +18,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Order> Orders {get;set;}
     public DbSet<OrderItem> OrderItems {get;set;}
     public DbSet<Category> Categories {get;set;}
+    public DbSet<Token> Token {get;set;}
     
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
     { }
@@ -57,7 +63,7 @@ public class ApplicationDbContext : DbContext
         
         modelBuilder.Entity<User>()
             .HasMany(u => u.Tokens)
-            .WithOne()
+            .WithOne(token => token.User )
             .HasForeignKey(t => t.UserId);
         
         base.OnModelCreating(modelBuilder);

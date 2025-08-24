@@ -1,5 +1,9 @@
-namespace ProductManagement.entity;
+using ProductManagement.Db;
+
+namespace ProductManagement.User;
 using Token; 
+using Cart;
+using Role; 
 public class User : BaseEntity
 {
     public string Email { get; set; }
@@ -7,11 +11,11 @@ public class User : BaseEntity
     public string FirstName { get; set; }
     public string LastName { get; set; }
 
-    public ICollection<Token>? Tokens { get; set; }
-    public Order? Order { get; set; }
+    public ICollection<Token> Tokens { get;} = new List<Token>();
+    public Order.Order? Order { get; set; }
     public Cart? Cart { get; set; }
 
-    public string getFullName()
+    public string GetFullName()
     {
         return $"{FirstName} {LastName}";
     } 

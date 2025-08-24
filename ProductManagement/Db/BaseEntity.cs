@@ -1,4 +1,4 @@
-namespace ProductManagement.entity;
+namespace ProductManagement.Db;
 
 public class BaseEntity
 {
