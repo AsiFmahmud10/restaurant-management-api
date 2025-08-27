@@ -97,7 +97,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseExceptionHandler();
 
-app.UseSwagger(options => options.RouteTemplate = "openapi/{documentName}.json");
+app.UseSwagger(options => options.RouteTemplate = "swagger/{documentName}/swagger.json");
 app.UseSwaggerUI();
 
 
