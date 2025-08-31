@@ -8,10 +8,12 @@ namespace ProductManagement.Auth;
 using User;
 using Token;
 using System;
+using Role;
 
 public class AuthService(
     IUserService userService,
     ITokenService tokenService,
+    IRoleService roleService,
     IBackgroundJobClient backgroundJobClient,
     IWebHostEnvironment hostEnv) : IAuthService
 {
@@ -31,6 +33,13 @@ public class AuthService(
             FirstName = request.FirstName,
             LastName = request.LastName,
         };
+
+        var role = roleService.FindByName("customer");
+        if (role is null)
+        {
+            throw new ApplicationException("customer_permission can not be found");
+        }
+        user.Roles.Add(role);
 
         userService.Save(user);
     }
