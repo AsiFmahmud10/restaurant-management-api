@@ -1,7 +1,9 @@
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+
 namespace ProductManagement.Db;
 
-public class GenericDbOperation<T>(ApplicationDbContext dbContext) :  IGenericDbOperation<T> where T : class
+public class GenericDbOperation<T>(ApplicationDbContext dbContext) :  IGenericDbOperation<T> where T : BaseEntity
 {
     public void save(T entity)
     {
@@ -14,12 +16,20 @@ public class GenericDbOperation<T>(ApplicationDbContext dbContext) :  IGenericDb
         dbContext.SaveChanges();
     }
 
-    public T? FindById(Guid id)
+    public T? FindById(Guid id, params Expression<Func<T,object>>[] includes )
     {
-        return dbContext.Set<T>().Find(id);
-    }
+        IQueryable<T> query = dbContext.Set<T>();
 
-    public ICollection<T> find(Expression<Func<T, bool>> predicate)
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
+       
+        return dbContext.Set<T>().FirstOrDefault(t => t.Id == id );
+    }
+    
+
+    public IList<T> Find(Expression<Func<T, bool>> predicate)
     {
         return dbContext.Set<T>().Where(predicate).ToList();
     }
