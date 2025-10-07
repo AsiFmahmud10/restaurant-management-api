@@ -94,14 +94,14 @@ public class AuthService(
             Token? token = tokenService.GetByValueWithUser(refreshTokenReq.RefreshToken);
             if (token is null)
             {
-                throw new Exception("");
+                throw new UnAuthorizedException("Token not found");
             }
 
             User? user = userService.FindById(token.UserId);
 
             if (user is null)
             {
-                throw new Exception("");
+                throw new UnAuthorizedException("User not found");
             }
 
             string? accessToken = tokenService.GenerateAccessToken(user);
@@ -109,7 +109,7 @@ public class AuthService(
 
             if (accessToken == null || refreshToken == null)
             {
-                throw new Exception("Token was not created");
+                throw new UnAuthorizedException("Token was not created");
             }
 
             Token refreshTokenEntity = new Token()
@@ -118,8 +118,8 @@ public class AuthService(
                 User = user,
                 TokenType = TokenType.Refresh,
             };
-
-            tokenService.DeleteTokenByUserId(user.Id);
+            
+             //tokenService.DeleteTokenByUserId(user.Id);
 
             user.Tokens.Add(refreshTokenEntity);
             userService.Update(user);
