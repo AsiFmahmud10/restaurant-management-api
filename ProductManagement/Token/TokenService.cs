@@ -55,7 +55,7 @@ public class TokenService(AuthSettings authSettings,ITokenRepository tokenReposi
         var tokenValue = Convert.ToBase64String(randomBytes)
             .Replace("+", "-")
             .Replace("/", "_")
-            .Replace("=", "");;
+            .Replace("=", "");
 
         Token token = new Token()
         {
