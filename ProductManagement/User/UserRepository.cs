@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using ProductManagement.Db;
 
@@ -5,9 +6,16 @@ namespace ProductManagement.User;
 
 public class UserRepository(ApplicationDbContext dbContext) : GenericDbOperation<User>(dbContext),IUserRepository 
 {
-    public User? FindByEmail(string email)
+    public User? FindByEmail(string email,params Expression<Func<User,object>>[] includes)
     {
-        return dbContext.Users.FirstOrDefault(u => u.Email == email);
+        IQueryable<User> query = dbContext.Users;
+
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
+       
+        return query.FirstOrDefault(user => user.Email.Equals(email));
     }
 
     public User? GetUserWithToken(string email)
