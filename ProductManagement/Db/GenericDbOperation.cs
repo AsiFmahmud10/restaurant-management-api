@@ -25,7 +25,7 @@ public class GenericDbOperation<T>(ApplicationDbContext dbContext) :  IGenericDb
             query = query.Include(include);
         }
        
-        return dbContext.Set<T>().FirstOrDefault(t => t.Id == id );
+        return query.FirstOrDefault(t => t.Id.Equals(id) );
     }
     
 
