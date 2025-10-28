@@ -46,7 +46,8 @@ public class AuthService(
 
     public LoginResponse Login(LoginReq loginReq)
     {
-        var user = userService.GetUserWithToken(loginReq.Email);
+        var user = userService.FindByEmail(loginReq.Email,user => user.Tokens,user => user.Roles);
+       
         if (user == null)
         {
             throw new ResourceNotFoundException("Email address not found");
