@@ -11,7 +11,7 @@ public class GlobalExceptionHandler : IExceptionHandler
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, System.Exception exception, CancellationToken cancellationToken)
     {
         
-        if (exception is ResourceNotFoundException)
+        if (exception is ResourceNotFoundException or BadRequestException)
         {
             problemDetails = new ProblemDetails()
             {
