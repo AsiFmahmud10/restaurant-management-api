@@ -1,5 +1,6 @@
 namespace ProductManagement.Product;
 using Db;
+using Category;
 public class Product : BaseEntity
 {
     public string Name { get; set; }

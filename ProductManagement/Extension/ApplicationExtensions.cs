@@ -1,3 +1,5 @@
+using ProductManagement.Category;
+
 namespace ProductManagement.Extension;
 
 using System.Text;
@@ -79,11 +81,12 @@ public static class ApplicationExtensions
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITokenRepository, TokenRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IPermissionService, PermissionService>();
         services.AddScoped<IPermissionRepository, PermissionRepository>();
-
+        services.AddScoped<ICategoryService, CategoryService>();
         return services;
     }
 

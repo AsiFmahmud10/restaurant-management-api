@@ -10,6 +10,7 @@ using Order;
 using Product;
 using Token;
 using Permission;
+using Category;
 
 public class ApplicationDbContext : DbContext
 {
@@ -58,7 +59,10 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(c => c.ProductId);
 
         modelBuilder.Entity<Category>()
-            .HasMany(c => c.Products)
+            .HasIndex(category => category.Name)
+            .IsUnique();
+        
+        modelBuilder.Entity<Category>().HasMany(c => c.Products)
             .WithOne(p => p.Category)
             .HasForeignKey(p => p.CategoryId);
 
