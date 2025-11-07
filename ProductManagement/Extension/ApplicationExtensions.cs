@@ -1,4 +1,5 @@
 using ProductManagement.Category;
+using ProductManagement.Product;
 
 namespace ProductManagement.Extension;
 
@@ -76,17 +77,21 @@ public static class ApplicationExtensions
 
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IUserService, UserService>();
-        services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<ITokenRepository, TokenRepository>();
-        services.AddScoped<ICategoryRepository, CategoryRepository>();
-        services.AddScoped<IRoleService, RoleService>();
-        services.AddScoped<IRoleRepository, RoleRepository>();
-        services.AddScoped<IPermissionService, PermissionService>();
-        services.AddScoped<IPermissionRepository, PermissionRepository>();
-        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IAuthService, AuthService>()
+                .AddScoped<IUserService, UserService>()
+                .AddScoped<ITokenService, TokenService>()
+                .AddScoped<IRoleService, RoleService>()
+                .AddScoped<IProductService, ProductService>()
+                .AddScoped<IPermissionService, PermissionService>()
+                .AddScoped<ICategoryService, CategoryService>();
+
+        services.AddScoped<IRoleRepository, RoleRepository>()
+            .AddScoped<IPermissionRepository, PermissionRepository>()
+            .AddScoped<IUserRepository, UserRepository>()
+            .AddScoped<ITokenRepository, TokenRepository>()
+            .AddScoped<ICategoryRepository, CategoryRepository>()
+            .AddScoped<IProductRepository, ProductRepository>();
+        
         return services;
     }
 
