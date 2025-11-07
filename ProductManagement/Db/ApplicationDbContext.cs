@@ -62,7 +62,16 @@ public class ApplicationDbContext : DbContext
             .HasIndex(category => category.Name)
             .IsUnique();
         
-        modelBuilder.Entity<Category>().HasMany(c => c.Products)
+        modelBuilder.Entity<Product>()
+            .HasIndex(p => p.Name)
+            .IsUnique();
+        
+        modelBuilder.Entity<Product>()
+            .HasIndex(p => p.Code)
+            .IsUnique();
+        
+        modelBuilder.Entity<Category>()
+            .HasMany(c => c.Products)
             .WithOne(p => p.Category)
             .HasForeignKey(p => p.CategoryId);
 

@@ -12,8 +12,8 @@ using ProductManagement.Db;
 namespace ProductManagement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251029173909_init_database")]
-    partial class init_database
+    [Migration("20251107175551_InitDatabase")]
+    partial class InitDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -288,9 +288,18 @@ namespace ProductManagement.Migrations
                     b.Property<bool>("Stock")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Tags")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Products");
                 });

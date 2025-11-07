@@ -12,6 +12,7 @@ public class CategoryService(ICategoryRepository categoryRepository) : ICategory
         {
             throw new BadRequestException("Category already exists");
         }
+
         var newCategory = new Category
         {
             Name = request.Name,
@@ -21,11 +22,21 @@ public class CategoryService(ICategoryRepository categoryRepository) : ICategory
 
     public void DeleteCategory(Guid categoryId)
     {
-        var existedCategory =  categoryRepository.FindById(categoryId);
+        var existedCategory = categoryRepository.FindById(categoryId);
         if (existedCategory is null)
         {
             throw new ResourceNotFoundException("Category not exist");
         }
+
+        if (categoryRepository.CategoryHasProducts(categoryId))
+        {
+            throw new BadRequestException("Products Exist for this Category");
+        }
         categoryRepository.Delete(existedCategory);
+    }
+
+    public Category? FindById(Guid categoryId)
+    {
+        return categoryRepository.FindById(categoryId);
     }
 }

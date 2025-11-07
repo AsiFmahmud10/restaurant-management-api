@@ -3,20 +3,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ProductManagement.Db;
 
-public class GenericDbOperation<T>(ApplicationDbContext dbContext) :  IGenericDbOperation<T> where T : BaseEntity
+public class GenericDbOperation<T>(ApplicationDbContext dbContext) : IGenericDbOperation<T> where T : BaseEntity
 {
     public void save(T entity)
     {
         dbContext.Set<T>().Add(entity);
         dbContext.SaveChanges();
     }
+
     public void Update(T entity)
     {
         dbContext.Set<T>().Update(entity);
         dbContext.SaveChanges();
     }
 
-    public T? FindById(Guid id, params Expression<Func<T,object>>[] includes )
+    public bool Exist(Expression<Func<T, bool>> predicate)
+    {
+        return dbContext.Set<T>().Any(predicate);
+    }
+
+    public T? FindById(Guid id, params Expression<Func<T, object>>[] includes)
     {
         IQueryable<T> query = dbContext.Set<T>();
 
@@ -24,17 +30,17 @@ public class GenericDbOperation<T>(ApplicationDbContext dbContext) :  IGenericDb
         {
             query = query.Include(include);
         }
-       
-        return query.FirstOrDefault(t => t.Id.Equals(id) );
+
+        return query.FirstOrDefault(t => t.Id.Equals(id));
     }
-    
+
 
     public IList<T> Find(Expression<Func<T, bool>> predicate)
     {
         return dbContext.Set<T>().Where(predicate).ToList();
     }
 
-    public T? FirstOrDefault( Expression<Func<T,bool>> predicate)
+    public T? FirstOrDefault(Expression<Func<T, bool>> predicate)
     {
         return dbContext.Set<T>().FirstOrDefault(predicate);
     }
@@ -43,7 +49,7 @@ public class GenericDbOperation<T>(ApplicationDbContext dbContext) :  IGenericDb
     {
         return null;
     }
-
+    
     public void Delete(T entity)
     {
         dbContext.Set<T>().Remove(entity);

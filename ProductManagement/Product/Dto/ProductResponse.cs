@@ -1,8 +1,6 @@
-namespace ProductManagement.Product;
-using Db;
-using Category;
+namespace ProductManagement.Product.Dto;
 
-public class Product : BaseEntity
+public class ProductResponse
 {
     public string Name { get; set; }
     public string Description { get; set; }
@@ -12,8 +10,5 @@ public class Product : BaseEntity
     public int Code {get; set; }
     public bool Stock {get; set;} =  true;
     public string? Tags {get; set; }
-
     public Guid CategoryId {get; set;}
-    public Category Category { get; set; }
 }
-
