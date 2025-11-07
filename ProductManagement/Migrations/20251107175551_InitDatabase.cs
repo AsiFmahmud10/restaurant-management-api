@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ProductManagement.Migrations
 {
     /// <inheritdoc />
-    public partial class init_database : Migration
+    public partial class InitDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -113,6 +113,7 @@ namespace ProductManagement.Migrations
                     Rating = table.Column<int>(type: "integer", nullable: false),
                     Code = table.Column<int>(type: "integer", nullable: false),
                     Stock = table.Column<bool>(type: "boolean", nullable: false),
+                    Tags = table.Column<string>(type: "text", nullable: true),
                     CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     ModifiedBy = table.Column<string>(type: "text", nullable: false),
@@ -327,6 +328,18 @@ namespace ProductManagement.Migrations
                 name: "IX_Products_CategoryId",
                 table: "Products",
                 column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_Code",
+                table: "Products",
+                column: "Code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_Name",
+                table: "Products",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleUser_UserId",

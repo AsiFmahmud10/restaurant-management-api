@@ -1,6 +1,7 @@
 namespace ProductManagement.Product;
 using Db;
 using Category;
+
 public class Product : BaseEntity
 {
     public string Name { get; set; }
@@ -10,8 +11,8 @@ public class Product : BaseEntity
     public int Rating { get; set; } = 0;
     public int Code {get; set; }
     public bool Stock {get; set;} =  true;
-    public virtual ICollection<string> Tags {get;} =  new List<string>();
-    
+    public string? Tags {get; set; }
+
     public Guid CategoryId {get; set;}
     public Category Category { get; set; }
 }
