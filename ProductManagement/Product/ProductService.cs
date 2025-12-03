@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using ProductManagement.Exception;
 using ProductManagement.Product.Dto;
 using ProductManagement.Services.Paging.Model;
@@ -8,6 +9,11 @@ using Category;
 
 public class ProductService(IProductRepository productRepository, ICategoryService categoryService) : IProductService
 {
+    public Product? FindByProductId(Guid productId, params Expression<Func<Product,object?>>[] includes)
+    {
+        return productRepository.FindById(productId,includes);
+    }
+
     public PaginationResult<ProductResponse> GetProductsByCategory(Guid categoryId,PageData pageData)
     {
         return productRepository.GetProductsByCategory(categoryId,pageData);

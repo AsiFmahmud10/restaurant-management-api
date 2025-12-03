@@ -23,4 +23,10 @@ public class UserRepository(ApplicationDbContext dbContext) : GenericDbOperation
         return dbContext.Users.Include(user => user.Tokens)
             .FirstOrDefault(u => u.Email == email);
     }
+
+    public User? FindUserWithCartDetails(Guid userId)
+    {
+        return dbContext.Users.Include(user => user.Cart).ThenInclude((cart => cart.CartItems))
+            .SingleOrDefault(user => user.Id.Equals(userId));
+    }
 }

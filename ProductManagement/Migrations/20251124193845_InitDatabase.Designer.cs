@@ -12,7 +12,7 @@ using ProductManagement.Db;
 namespace ProductManagement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251107175551_InitDatabase")]
+    [Migration("20251124193845_InitDatabase")]
     partial class InitDatabase
     {
         /// <inheritdoc />
@@ -53,9 +53,6 @@ namespace ProductManagement.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool?>("IsMerged")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -63,8 +60,8 @@ namespace ProductManagement.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("Token")
-                        .HasColumnType("uuid");
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

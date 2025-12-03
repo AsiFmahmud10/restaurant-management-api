@@ -1,3 +1,4 @@
+using ProductManagement.Cart;
 using ProductManagement.Category;
 using ProductManagement.Product;
 
@@ -78,19 +79,21 @@ public static class ApplicationExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IAuthService, AuthService>()
-                .AddScoped<IUserService, UserService>()
-                .AddScoped<ITokenService, TokenService>()
-                .AddScoped<IRoleService, RoleService>()
-                .AddScoped<IProductService, ProductService>()
-                .AddScoped<IPermissionService, PermissionService>()
-                .AddScoped<ICategoryService, CategoryService>();
+            .AddScoped<IUserService, UserService>()
+            .AddScoped<ITokenService, TokenService>()
+            .AddScoped<IRoleService, RoleService>()
+            .AddScoped<IProductService, ProductService>()
+            .AddScoped<IPermissionService, PermissionService>()
+            .AddScoped<ICategoryService, CategoryService>()
+            .AddScoped<ICartService, CartService>();
 
         services.AddScoped<IRoleRepository, RoleRepository>()
             .AddScoped<IPermissionRepository, PermissionRepository>()
             .AddScoped<IUserRepository, UserRepository>()
             .AddScoped<ITokenRepository, TokenRepository>()
             .AddScoped<ICategoryRepository, CategoryRepository>()
-            .AddScoped<IProductRepository, ProductRepository>();
+            .AddScoped<IProductRepository, ProductRepository>()
+            .AddScoped<ICartRepository, CartRepository>();
         
         return services;
     }

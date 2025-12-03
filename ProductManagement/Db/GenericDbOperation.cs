@@ -22,7 +22,7 @@ public class GenericDbOperation<T>(ApplicationDbContext dbContext) : IGenericDbO
         return dbContext.Set<T>().Any(predicate);
     }
 
-    public T? FindById(Guid id, params Expression<Func<T, object>>[] includes)
+    public T? FindById(Guid id, params Expression<Func<T, object?>>[] includes)
     {
         IQueryable<T> query = dbContext.Set<T>();
 

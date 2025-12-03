@@ -1,13 +1,11 @@
+using ProductManagement.Cart.Dto;
 using ProductManagement.Db;
 
 namespace ProductManagement.Cart;
 
 public class Cart : BaseEntity
-{   
-    
-    public Guid? Token { get;set; }
-    public bool? IsMerged {get; set; }
-    
+{
+    public CartType Type { get; set; }
     public virtual ICollection<CartItem> CartItems { get; } = new List<CartItem>();
 
     public void AddCartItems(CartItem cartItem)
