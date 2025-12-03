@@ -16,8 +16,7 @@ namespace ProductManagement.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Token = table.Column<Guid>(type: "uuid", nullable: true),
-                    IsMerged = table.Column<bool>(type: "boolean", nullable: true),
+                    Type = table.Column<int>(type: "integer", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     ModifiedBy = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),

@@ -7,9 +7,9 @@ using Role;
 public class UserService(IUserRepository userRepository, IRoleService roleService) : IUserService
 {
     
-    public User? FindById(Guid id)
+    public User? FindById(Guid id,params Expression<Func<User,object?>>[] includes)
     {
-        return userRepository.FindById(id);
+        return userRepository.FindById(id,includes);
     }
 
     public User? FindByPassword(string existedHashedPassword)
@@ -68,7 +68,11 @@ public class UserService(IUserRepository userRepository, IRoleService roleServic
         
         throw new BadRequestException("This role doesn't assigned to the user");
     }
-   
+
+    public User? FindUserWithCartDetails(Guid userId)
+    {
+        return userRepository.FindUserWithCartDetails(userId);
+    }
 
     public User? FindByEmail(string email,params Expression<Func<User, object>>[] includes)
     {
