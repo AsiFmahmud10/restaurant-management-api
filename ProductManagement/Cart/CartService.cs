@@ -87,6 +87,46 @@ public class CartService(ICartRepository cartRepository, IUserService userServic
         };
     }
 
+    public CartDetailsResponse GetCartDetails(Guid? cartId, ClaimsPrincipal principal)
+    {
+        Cart cart;
+        if (AuthenticatedUserService.IsAuthenticated(principal))
+        {
+            var userId = AuthenticatedUserService.GetUserId(principal);
+            var user = userService.FindUserWithCartDetails(userId) ??
+                       throw new ResourceNotFoundException("User not found");
+            cart = user.Cart ?? throw new ResourceNotFoundException("User has no cart yet");
+        }
+        else
+        {
+            if (cartId is null)
+            {
+                throw new ResourceNotFoundException("Guest user does not have a cart yet");
+            }
+
+            cart = cartRepository.GetCartDetails(cartId.Value) ??
+                   throw new ResourceNotFoundException("Cart not found with guest cart id " + cartId);
+        }
+
+        var cartItemDetailsResponse = cart.CartItems.ToList().Select(cartItem => new CartItemDetailsResponse()
+        {
+            Id = cartItem.Id,
+            ProductId = cartItem.Product.Id,
+            Quantity = cartItem.Quantity,
+            ProductName = cartItem.Product.Name,
+            ItemPrice = cartItem.Product.Price,
+            TotalPrice = cartItem.GetTotalPrice()
+        }).ToList();
+
+        return new CartDetailsResponse()
+        {
+            CartId = cart.Id,
+            CartItemDetails = cartItemDetailsResponse,
+            Type = cart.Type,
+            TotalPrice = cart.GetTotalPrice()
+        };
+    }
+
     private void MergeCart(AddProductToCartRequest request, User user, Product product)
     {
         Cart? existedCart = cartRepository.GetCartDetails(user.Cart!.Id);
