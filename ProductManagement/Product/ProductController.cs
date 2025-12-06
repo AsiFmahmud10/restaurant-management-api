@@ -20,7 +20,7 @@ public class ProductController(IProductService productService) : Controller
         }
 
         productService.AddProduct(request);
-        return Ok("Category created successfully");
+        return Ok("Product added successfully");
     }
 
     [Authorize(Roles = "admin")]
