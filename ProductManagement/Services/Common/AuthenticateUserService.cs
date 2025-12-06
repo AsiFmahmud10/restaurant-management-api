@@ -11,7 +11,7 @@ public abstract class AuthenticatedUserService
 
     public static Guid GetUserId(ClaimsPrincipal principal)
     {
-        if (IsAuthenticated(principal))
+        if (!IsAuthenticated(principal))
         {
             throw new UnauthorizedAccessException("user is not authenticated");
         }
