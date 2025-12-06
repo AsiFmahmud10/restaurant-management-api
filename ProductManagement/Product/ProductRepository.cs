@@ -24,6 +24,7 @@ public class ProductRepository(ApplicationDbContext dbContext)
         var result = query
             .Select(product => new ProductResponse()
             {
+                Id = product.Id,
                 Name = product.Name,
                 Description = product.Description,
                 CategoryId = product.CategoryId,
