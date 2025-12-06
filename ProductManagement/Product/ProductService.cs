@@ -45,7 +45,8 @@ public class ProductService(IProductRepository productRepository, ICategoryServi
             Rating = request.Rating,
             Stock = request.Stock,
             Tags = request.Tags,
-            Category = existedCategory
+            Category = existedCategory,
+            Code = request.Code
         };
 
         productRepository.save(product);

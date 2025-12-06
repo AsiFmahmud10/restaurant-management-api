@@ -26,7 +26,10 @@ public class UserRepository(ApplicationDbContext dbContext) : GenericDbOperation
 
     public User? FindUserWithCartDetails(Guid userId)
     {
-        return dbContext.Users.Include(user => user.Cart).ThenInclude((cart => cart.CartItems))
+        return dbContext.Users
+            .Include(user => user.Cart)
+            .ThenInclude((cart => cart.CartItems))
+            .ThenInclude((cartItem) => cartItem.Product)
             .SingleOrDefault(user => user.Id.Equals(userId));
     }
 }

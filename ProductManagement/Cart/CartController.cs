@@ -20,4 +20,15 @@ public class CatController(ICartService cartService) : Controller
         return Ok(cartService.AddProductToCart(request,HttpContext.User));
     }
     
+    [AllowAnonymous()]
+    [HttpPost()]
+    [SwaggerOperation("Get Cart Details",description:"Get cart Details")]
+    public IActionResult GetCartDetails([FromQuery] Guid? cartId)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        return Ok(cartService.GetCartDetails(cartId,HttpContext.User));
+    }
 }
