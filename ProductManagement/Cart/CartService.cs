@@ -127,6 +127,12 @@ public class CartService(ICartRepository cartRepository, IUserService userServic
         };
     }
 
+    public void ClearCart(Guid cartId)
+    {
+        Cart cart = cartRepository.FindById(cartId) ?? throw new ResourceNotFoundException("Cart not found");
+        cartRepository.ClearCart(cart.Id);
+    }
+
     private void MergeCart(AddProductToCartRequest request, User user, Product product)
     {
         Cart? existedCart = cartRepository.GetCartDetails(user.Cart!.Id);
