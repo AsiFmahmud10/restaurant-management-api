@@ -6,7 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace ProductManagement.Cart;
 
 [Route("api/v1/cart")]
-public class CatController(ICartService cartService) : Controller
+public class CartController(ICartService cartService) : Controller
 {
     [AllowAnonymous()]
     [HttpPost("products/add")]
@@ -36,7 +36,7 @@ public class CatController(ICartService cartService) : Controller
 
     [AllowAnonymous()]
     [HttpDelete()]
-    [SwaggerOperation("Get Cart Details",
+    [SwaggerOperation("Clear cart",
         description: "Cart Id is required for guest user. For authenticated user dont need to pass the cart id")]
     public IActionResult ClearCart(Guid cartId)
     {
