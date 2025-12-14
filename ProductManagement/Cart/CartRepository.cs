@@ -17,4 +17,9 @@ public class CartRepository(ApplicationDbContext dbContext) : GenericDbOperation
             .ThenInclude(cartItem => cartItem.Product)
             .SingleOrDefault(c => c.Id == cartId);
     }
+
+    public void ClearCart(Guid cartId)
+    {
+        dbContext.CartItems.Where(cart => cart.CartId.Equals(cartId)).ExecuteDelete();
+    }
 }
