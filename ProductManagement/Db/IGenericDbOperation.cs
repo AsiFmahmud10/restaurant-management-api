@@ -11,5 +11,6 @@ public interface IGenericDbOperation<T> where T : BaseEntity
     IList<T> Find(Expression<Func<T, bool>> predicate);
     ICollection<T> findAll(ICollection<int> idList);
     void  Delete(T entity);
+    public ICollection<T> GetAll();
     T? FirstOrDefault(Expression<Func<T, bool>> predicate);
 }
