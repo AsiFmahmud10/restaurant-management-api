@@ -1,6 +1,6 @@
 using ProductManagement.Db;
 
-namespace ProductManagement.Cart;
+namespace ProductManagement.CartItem;
 using Product;
 public class CartItem : BaseEntity
 {

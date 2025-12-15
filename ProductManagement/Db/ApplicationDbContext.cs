@@ -11,7 +11,7 @@ using Product;
 using Token;
 using Permission;
 using Category;
-
+using CartItem;
 public class ApplicationDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }

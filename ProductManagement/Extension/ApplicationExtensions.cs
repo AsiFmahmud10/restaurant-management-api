@@ -1,4 +1,5 @@
 using ProductManagement.Cart;
+using ProductManagement.CartItem;
 using ProductManagement.Category;
 using ProductManagement.Product;
 
@@ -85,7 +86,8 @@ public static class ApplicationExtensions
             .AddScoped<IProductService, ProductService>()
             .AddScoped<IPermissionService, PermissionService>()
             .AddScoped<ICategoryService, CategoryService>()
-            .AddScoped<ICartService, CartService>();
+            .AddScoped<ICartService, CartService>()
+            .AddScoped<ICartItemService,CartItemService>();
 
         services.AddScoped<IRoleRepository, RoleRepository>()
             .AddScoped<IPermissionRepository, PermissionRepository>()
@@ -93,7 +95,8 @@ public static class ApplicationExtensions
             .AddScoped<ITokenRepository, TokenRepository>()
             .AddScoped<ICategoryRepository, CategoryRepository>()
             .AddScoped<IProductRepository, ProductRepository>()
-            .AddScoped<ICartRepository, CartRepository>();
+            .AddScoped<ICartRepository, CartRepository>()
+            .AddScoped<ICartItemRepository, CartItemRepository>();
         
         return services;
     }

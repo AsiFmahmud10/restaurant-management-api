@@ -7,6 +7,7 @@ namespace ProductManagement.Cart;
 
 using User;
 using Product;
+using CartItem;
 
 public class CartService(ICartRepository cartRepository, IUserService userService, IProductService productService)
     : ICartService
