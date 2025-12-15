@@ -7,4 +7,5 @@ public interface ICategoryService
     void CreateCategory(CreateCategoryRequest request);
     void DeleteCategory(Guid categoryId);
     Category? FindById(Guid requestCategoryId);
+    List<GetCategoryResponse> GetCategory();
 }

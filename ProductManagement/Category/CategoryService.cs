@@ -39,4 +39,14 @@ public class CategoryService(ICategoryRepository categoryRepository) : ICategory
     {
         return categoryRepository.FindById(categoryId);
     }
+
+    public List<GetCategoryResponse> GetCategory()
+    {
+       return categoryRepository.GetAll().Select(category => new GetCategoryResponse
+        {
+            Id = category.Id,
+            Name = category.Name,
+        }).ToList();
+        
+    }
 }

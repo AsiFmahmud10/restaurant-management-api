@@ -49,7 +49,10 @@ public class GenericDbOperation<T>(ApplicationDbContext dbContext) : IGenericDbO
     {
         return null;
     }
-    
+    public ICollection<T> GetAll()
+    {
+        return dbContext.Set<T>().ToList();
+    }
     public void Delete(T entity)
     {
         dbContext.Set<T>().Remove(entity);
