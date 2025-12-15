@@ -2,7 +2,7 @@ using ProductManagement.Cart.Dto;
 using ProductManagement.Db;
 
 namespace ProductManagement.Cart;
-
+using CartItem;
 public class Cart : BaseEntity
 {
     public CartType Type { get; set; }
