@@ -1,5 +1,6 @@
 using Hangfire;
 using ProductManagement.Auth.Dto;
+using ProductManagement.Cart;
 using ProductManagement.Exception;
 using ProductManagement.Services.Email;
 
@@ -14,6 +15,7 @@ public class AuthService(
     IUserService userService,
     ITokenService tokenService,
     IRoleService roleService,
+    ICartService cartService,
     IBackgroundJobClient backgroundJobClient,
     IWebHostEnvironment hostEnv) : IAuthService
 {
@@ -39,6 +41,7 @@ public class AuthService(
         {
             throw new ApplicationException("customer_permission can not be found");
         }
+
         user.Roles.Add(role);
 
         userService.Save(user);
@@ -46,25 +49,19 @@ public class AuthService(
 
     public LoginResponse Login(LoginReq loginReq)
     {
-        var user = userService.FindByEmail(loginReq.Email,user => user.Tokens,user => user.Roles);
-       
-        if (user == null)
-        {
-            throw new ResourceNotFoundException("Email address not found");
-        }
+        var user = userService.FindByEmail(loginReq.Email, user => user.Tokens, user => user.Roles) ??
+                   throw new ResourceNotFoundException("Email address not found");
 
         if (BCrypt.Net.BCrypt.Verify(loginReq.Password, user.Password) == false)
         {
             throw new UnAuthorizedException("Passwords do not match");
         }
 
-        var accessToken = tokenService.GenerateAccessToken(user);
-        var refreshToken = tokenService.GenerateRefreshToken();
+        var accessToken = tokenService.GenerateAccessToken(user) ??
+                          throw new ApplicationException("Access token was not created");
+        var refreshToken = tokenService.GenerateRefreshToken() ??
+                           throw new ApplicationException("Refresh token was not created");
 
-        if (accessToken == null || refreshToken == null)
-        {
-            throw new ApplicationException("Token was not created");
-        }
 
         Token refreshTokenEntity = new Token()
         {
@@ -76,6 +73,14 @@ public class AuthService(
         user.Tokens.Add(refreshTokenEntity);
         userService.Update(user);
 
+        if ((loginReq.CartId is { } guestCartId) && (user.Roles.Any(role => role.Name.Equals("admin"))))
+        {
+            cartService.MergeGuestCartWithUserCart(user.Id,guestCartId);
+        }
+     
+        
+       
+        
         return new LoginResponse
         {
             AccessToken = accessToken,
@@ -83,54 +88,55 @@ public class AuthService(
         };
     }
 
+    
+
     public LoginResponse RefreshToken(RefreshTokenReq refreshTokenReq)
     {
-            bool isValid = tokenService.ValidateToken(refreshTokenReq.RefreshToken);
+        bool isValid = tokenService.ValidateToken(refreshTokenReq.RefreshToken);
 
-            if (isValid is false)
-            {
-                throw new UnAuthorizedException("Invalid refresh token");
-            }
+        if (isValid is false)
+        {
+            throw new UnAuthorizedException("Invalid refresh token");
+        }
 
-            Token? token = tokenService.GetByValueWithUser(refreshTokenReq.RefreshToken);
-            if (token is null)
-            {
-                throw new Exception("");
-            }
+        Token? token = tokenService.GetByValueWithUser(refreshTokenReq.RefreshToken);
+        if (token is null)
+        {
+            throw new Exception("");
+        }
 
-            User? user = userService.FindById(token.UserId);
+        User? user = userService.FindById(token.UserId);
 
-            if (user is null)
-            {
-                throw new Exception("");
-            }
+        if (user is null)
+        {
+            throw new Exception("");
+        }
 
-            string? accessToken = tokenService.GenerateAccessToken(user);
-            string? refreshToken = tokenService.GenerateRefreshToken();
+        string? accessToken = tokenService.GenerateAccessToken(user);
+        string? refreshToken = tokenService.GenerateRefreshToken();
 
-            if (accessToken == null || refreshToken == null)
-            {
-                throw new Exception("Token was not created");
-            }
+        if (accessToken == null || refreshToken == null)
+        {
+            throw new Exception("Token was not created");
+        }
 
-            Token refreshTokenEntity = new Token()
-            {
-                Value = refreshToken,
-                User = user,
-                TokenType = TokenType.Refresh,
-            };
+        Token refreshTokenEntity = new Token()
+        {
+            Value = refreshToken,
+            User = user,
+            TokenType = TokenType.Refresh,
+        };
 
-            tokenService.DeleteTokenByUserId(user.Id);
+        tokenService.DeleteTokenByUserId(user.Id);
 
-            user.Tokens.Add(refreshTokenEntity);
-            userService.Update(user);
+        user.Tokens.Add(refreshTokenEntity);
+        userService.Update(user);
 
-            return new LoginResponse
-            {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken
-            };
-    
+        return new LoginResponse
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        };
     }
 
     public void ChangePassword(ChangePasswordReq changePasswordReq)
@@ -140,19 +146,19 @@ public class AuthService(
         {
             throw new ApplicationException("Provide valid Password");
         }
-        
+
         var isPasswordMatched = BCrypt.Net.BCrypt.Verify(changePasswordReq.OldPassword, user.Password);
 
         if (!isPasswordMatched)
         {
             throw new UnAuthorizedException("Passwords do not match");
         }
-        
+
         if (isPasswordMatched)
         {
-            user.Password  = BCrypt.Net.BCrypt.HashPassword(changePasswordReq.NewPassword);
-            
+            user.Password = BCrypt.Net.BCrypt.HashPassword(changePasswordReq.NewPassword);
         }
+
         userService.Update(user);
     }
 
@@ -171,7 +177,7 @@ public class AuthService(
         userService.Update(user);
 
         var emailBody = string.Format(GetEmailTemplate("reset-password.html"), resetPasswordToken.Value);
-        
+
         //sendEmail 
         backgroundJobClient
             .Enqueue<IEmailService>(emailService =>

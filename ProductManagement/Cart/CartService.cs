@@ -133,42 +133,51 @@ public class CartService(ICartRepository cartRepository, IUserService userServic
         Cart cart = cartRepository.FindById(cartId) ?? throw new ResourceNotFoundException("Cart not found");
         cartRepository.ClearCart(cart.Id);
     }
-
-    private void MergeCart(AddProductToCartRequest request, User user, Product product)
+    
+    public void MergeGuestCartWithUserCart(Guid userId, Guid guestCartId)
     {
-        Cart? existedCart = cartRepository.GetCartDetails(user.Cart!.Id);
-        if (existedCart is null)
+        var guestCart = cartRepository.GetCartDetails(guestCartId) ??
+                        throw new ResourceNotFoundException("Guest Cart not found");
+
+        if (!guestCart.Type.Equals(CartType.Guest))
         {
-            throw new ResourceNotFoundException("Cart not found");
+            throw new ResourceNotFoundException("Cart type is not Guest");
         }
 
-        Guid? cartId = request.CartId;
-
-        if (cartId.HasValue)
+        User user = userService.FindById(userId, user => user.Cart) ??
+                    throw new ResourceNotFoundException("Cart not found");
+        
+        if (user.Cart is null)
         {
-            Cart guestCart = cartRepository.GetCartDetails(cartId.Value) ??
-                             throw new ResourceNotFoundException("Guest Cart not found");
+            guestCart.Type = CartType.Customer;
+            user.Cart = guestCart;
+            userService.Update(user);
+            return;
+        }
 
-            //merge guest cart with existed cart
-            //jodi product id same hoy keep guest else keep both
-            Dictionary<Guid, CartItem> productIdToCartItemFromExistedCart = existedCart.CartItems
-                .ToList()
-                .ToDictionary(cartItem => cartItem.Product.Id, carItem => carItem);
+        Cart userCartWithDetails = cartRepository.GetCartDetails(user.Cart.Id) ?? throw new ResourceNotFoundException("Cart not found");
+       
 
-            guestCart.CartItems.ToList().ForEach(cartItem =>
+
+        //merge guest cart with existed cart
+        //if product id same of guest and customer cart merge else keep both
+        Dictionary<Guid, CartItem> productIdToCartItemFromUserCart = userCartWithDetails.CartItems
+            .ToList()
+            .ToDictionary(cartItem => cartItem.Product.Id, carItem => carItem);
+
+        guestCart.CartItems.ToList().ForEach(cartItem =>
+            {
+                if (productIdToCartItemFromUserCart.TryGetValue(cartItem.ProductId, out var value))
                 {
-                    if (productIdToCartItemFromExistedCart.TryGetValue(cartItem.Id, out var value))
-                    {
-                        value.Quantity = cartItem.Quantity;
-                    }
-                    else
-                    {
-                        existedCart.AddCartItems(cartItem);
-                    }
+                    value.Quantity = cartItem.Quantity;
                 }
-            );
-
-            cartRepository.Update(existedCart);
-        }
+                else
+                {
+                    userCartWithDetails.AddCartItems(cartItem);
+                }
+            }
+        );
+        cartRepository.Delete(guestCart);
+        cartRepository.Update(userCartWithDetails);
     }
 }
