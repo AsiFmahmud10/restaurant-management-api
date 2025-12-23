@@ -7,7 +7,7 @@ namespace ProductManagement.Order;
 [Route("api/v1/orders")]
 public class OrderController(IOrderService orderService) : Controller
 {
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = "customer")]
     [HttpPost("add")]
     [SwaggerOperation("Add Order", description: "Add Order")]
     public IActionResult AddOrder()
@@ -16,7 +16,6 @@ public class OrderController(IOrderService orderService) : Controller
         {
             return BadRequest(ModelState);
         }
-
         
         return Ok(orderService.AddOrder(HttpContext.User));
     }
