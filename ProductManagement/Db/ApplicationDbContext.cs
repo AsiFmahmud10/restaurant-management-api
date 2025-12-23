@@ -33,8 +33,8 @@ public class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<Order>()
             .HasOne(o => o.User)
-            .WithOne(user => user.Order)
-            .HasForeignKey<Order>(o => o.UserId);
+            .WithMany(user => user.Orders)
+            .HasForeignKey(o => o.UserId);
 
         modelBuilder.Entity<Order>()
             .HasMany(o => o.OrderItems)
@@ -87,6 +87,10 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Role>()
             .HasMany(r => r.Permissions)
             .WithMany();
+        
+        modelBuilder.Entity<Order>()
+            .HasIndex(order => order.Identifier)
+            .IsUnique();
 
         base.OnModelCreating(modelBuilder);
     }
