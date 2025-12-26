@@ -15,6 +15,7 @@ public class Order : BaseEntity
     public string? Note { get; set; }
     public string? ReceiverNumber { get; set; }
     public Payment? Payment { get; set; }
+    public string? ShipmentTrackingUrl { get; set; }
 
     public void AddIdentifier()
     {
@@ -27,7 +28,6 @@ public class Order : BaseEntity
     {
         return OrderItems.Sum(item => item.GetTotalPrice());
     }
-
     public void Confirm(string address, Payment payment,string receiverNumber, string? note = null)
     {
         if (Status != OrderStatus.Pending)
