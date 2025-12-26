@@ -1,6 +1,7 @@
 using ProductManagement.Cart;
 using ProductManagement.CartItem;
 using ProductManagement.Category;
+using ProductManagement.Order;
 using ProductManagement.Product;
 
 namespace ProductManagement.Extension;
@@ -87,7 +88,10 @@ public static class ApplicationExtensions
             .AddScoped<IPermissionService, PermissionService>()
             .AddScoped<ICategoryService, CategoryService>()
             .AddScoped<ICartService, CartService>()
-            .AddScoped<ICartItemService,CartItemService>();
+            .AddScoped<ICartItemService, CartItemService>()
+            .AddScoped<IOrderService, OrderService>()
+            .AddScoped<IOrderRepository, OrderRepository>();
+
 
         services.AddScoped<IRoleRepository, RoleRepository>()
             .AddScoped<IPermissionRepository, PermissionRepository>()
