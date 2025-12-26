@@ -162,6 +162,12 @@ namespace ProductManagement.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ReceiverNumber")
+                        .HasColumnType("text");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -217,6 +223,47 @@ namespace ProductManagement.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("ProductManagement.Order.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Media")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.HasIndex("TransactionId")
+                        .IsUnique();
+
+                    b.ToTable("Payment");
                 });
 
             modelBuilder.Entity("ProductManagement.Permission.Permission", b =>
@@ -500,6 +547,17 @@ namespace ProductManagement.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("ProductManagement.Order.Payment", b =>
+                {
+                    b.HasOne("ProductManagement.Order.Order", "Order")
+                        .WithOne("Payment")
+                        .HasForeignKey("ProductManagement.Order.Payment", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("ProductManagement.Product.Product", b =>
                 {
                     b.HasOne("ProductManagement.Category.Category", "Category")
@@ -559,6 +617,8 @@ namespace ProductManagement.Migrations
             modelBuilder.Entity("ProductManagement.Order.Order", b =>
                 {
                     b.Navigation("OrderItems");
+
+                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("ProductManagement.User.User", b =>

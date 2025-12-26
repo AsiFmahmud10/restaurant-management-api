@@ -1,5 +1,3 @@
-using ProductManagement.Product;
-
 namespace ProductManagement.Db;
 
 using Microsoft.EntityFrameworkCore;
@@ -90,6 +88,15 @@ public class ApplicationDbContext : DbContext
         
         modelBuilder.Entity<Order>()
             .HasIndex(order => order.Identifier)
+            .IsUnique();
+        
+        modelBuilder.Entity<Payment>()
+            .HasOne(p => p.Order)
+            .WithOne(o => o.Payment)
+            .HasForeignKey<Payment>(p => p.OrderId);
+
+        modelBuilder.Entity<Payment>()
+            .HasIndex(payment => payment.TransactionId)
             .IsUnique();
 
         base.OnModelCreating(modelBuilder);

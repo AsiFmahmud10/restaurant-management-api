@@ -59,4 +59,21 @@ public class OrderService(IOrderRepository orderRepository, IUserService userSer
         };
         
     }
+
+    public void ConfirmOrder(ConfirmOrderReq confirmOrderReq, ClaimsPrincipal principal)
+    {
+        Guid userId = AuthenticatedUserService.GetUserId(principal);
+        var order =  orderRepository.FindById(confirmOrderReq.OrderId) ?? throw new ResourceNotFoundException("Order not found");
+
+        var payment = new Payment()
+        {
+            OrderId = order.Id,
+            Order = order,
+            Media = confirmOrderReq.Media,
+            TransactionId = confirmOrderReq.TransactionId
+        };
+        
+        order.Confirm(confirmOrderReq.Address,payment,confirmOrderReq.ReceiverNumber,confirmOrderReq.Note);
+        orderRepository.Update(order);
+    }
 }
