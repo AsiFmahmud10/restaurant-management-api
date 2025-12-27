@@ -46,7 +46,7 @@ public class OrderController(IOrderService orderService) : Controller
             return BadRequest(ModelState);
         }
 
-        orderService.UpdateStatusToPaidOrComplete(orderId, OrderStatus.Paid);
+        orderService.UpdateStatusToPaid(orderId);
         return Ok("Order status updated to paid successfully");
     }
 
@@ -74,7 +74,7 @@ public class OrderController(IOrderService orderService) : Controller
             return BadRequest(ModelState);
         }
 
-        orderService.UpdateStatusToPaidOrComplete(orderId, OrderStatus.Completed);
+        orderService.UpdateStatusToComplete(orderId);
         return Ok("Order status updated to completed successfully");
     }
 }

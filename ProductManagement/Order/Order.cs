@@ -1,3 +1,5 @@
+using ProductManagement.Order.Enum;
+
 namespace ProductManagement.Order;
 
 using User;
