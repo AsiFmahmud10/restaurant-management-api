@@ -7,6 +7,7 @@ public interface IOrderService
 {
     AddOrderResponse AddOrder(ClaimsPrincipal httpContextUser);
     void ConfirmOrder(ConfirmOrderReq confirmOrderReq, ClaimsPrincipal httpContextUser);
-    void UpdateStatusToPaidOrComplete(Guid orderId,OrderStatus status);
+    void UpdateStatusToPaid(Guid orderId);
+    void UpdateStatusToComplete(Guid orderId);
     void UpdateStatusToShipped(Guid orderId,StatusToShippedRequest statusToShippedRequest);
 }

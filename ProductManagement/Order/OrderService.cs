@@ -2,13 +2,18 @@ using System.Security.Claims;
 using ProductManagement.Cart;
 using ProductManagement.Exception;
 using ProductManagement.Order.Dto;
+using ProductManagement.Order.Enum;
 using ProductManagement.Services.Common;
 
 namespace ProductManagement.Order;
 
 using User;
 
-public class OrderService(IOrderRepository orderRepository, IUserService userService, ICartService cartService)
+public class OrderService(
+    IOrderRepository orderRepository,
+    IUserService userService,
+    ICartService cartService
+)
     : IOrderService
 {
     public AddOrderResponse AddOrder(ClaimsPrincipal principal)
@@ -63,7 +68,7 @@ public class OrderService(IOrderRepository orderRepository, IUserService userSer
     {
         Guid userId = AuthenticatedUserService.GetUserId(principal);
         var user = userService.FindUserWithCartDetails(userId) ?? throw new ResourceNotFoundException("User not found");
-        
+
         var order = orderRepository.FindById(confirmOrderReq.OrderId) ??
                     throw new ResourceNotFoundException("Order not found");
 
@@ -80,24 +85,38 @@ public class OrderService(IOrderRepository orderRepository, IUserService userSer
         {
             cartService.ClearCart(user.Cart.Id);
         }
+
         orderRepository.Update(order);
-        
     }
 
-    public void UpdateStatusToPaidOrComplete(Guid orderId, OrderStatus status)
+    public void UpdateStatusToPaid(Guid orderId)
     {
-        if ((status != OrderStatus.Paid) && (status != OrderStatus.Completed))
-        {
-            throw new ApplicationException("paid or completed order-status are allowed");
-        }
+        var order = orderRepository.GetOrderDetails(orderId) ??
+                    throw new ResourceNotFoundException("Order not found");
+        ValidationForSpecificStatus(order, OrderStatus.Paid);
 
+        // update inventory product quantity
+        order.OrderItems.ToList().ForEach(orderItem =>
+        {
+            var product = orderItem.Product;
+            product.Quantity = product.Quantity - orderItem.Quantity;
+        });
+
+        order.Status = OrderStatus.Paid;
+        orderRepository.SaveChanges();
+    }
+
+    public void UpdateStatusToComplete(Guid orderId)
+    {
         var order = orderRepository.FindById(orderId) ??
                     throw new ResourceNotFoundException("Order not found");
-        ValidationForSpecificStatus(order, status);
 
-        order.Status = status;
-        orderRepository.Update(order);
+        ValidationForSpecificStatus(order, OrderStatus.Completed);
+
+        order.Status = OrderStatus.Completed;
+        orderRepository.SaveChanges();
     }
+
 
     public void UpdateStatusToShipped(Guid orderId, StatusToShippedRequest statusToShippedRequest)
     {
