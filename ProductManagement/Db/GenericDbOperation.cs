@@ -17,6 +17,11 @@ public class GenericDbOperation<T>(ApplicationDbContext dbContext) : IGenericDbO
         dbContext.SaveChanges();
     }
 
+    public void SaveChanges()
+    {
+        dbContext.SaveChanges();
+    }
+
     public bool Exist(Expression<Func<T, bool>> predicate)
     {
         return dbContext.Set<T>().Any(predicate);
@@ -45,9 +50,9 @@ public class GenericDbOperation<T>(ApplicationDbContext dbContext) : IGenericDbO
         return dbContext.Set<T>().FirstOrDefault(predicate);
     }
 
-    public ICollection<T> findAll(ICollection<int> idList)
+    public List<T> FindAll(List<Guid> idList)
     {
-        return null;
+        return dbContext.Set<T>().Where(entity => idList.Contains(entity.Id)).ToList();
     }
     public ICollection<T> GetAll()
     {
