@@ -1,3 +1,5 @@
+using ProductManagement.Order.Enum;
+
 namespace ProductManagement.Order.Dto;
 
 public class AddOrderResponse
