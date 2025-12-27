@@ -62,6 +62,8 @@ public class OrderService(IOrderRepository orderRepository, IUserService userSer
     public void ConfirmOrder(ConfirmOrderReq confirmOrderReq, ClaimsPrincipal principal)
     {
         Guid userId = AuthenticatedUserService.GetUserId(principal);
+        var user = userService.FindUserWithCartDetails(userId) ?? throw new ResourceNotFoundException("User not found");
+        
         var order = orderRepository.FindById(confirmOrderReq.OrderId) ??
                     throw new ResourceNotFoundException("Order not found");
 
@@ -74,7 +76,12 @@ public class OrderService(IOrderRepository orderRepository, IUserService userSer
         };
 
         order.Confirm(confirmOrderReq.Address, payment, confirmOrderReq.ReceiverNumber, confirmOrderReq.Note);
+        if (user.Cart != null)
+        {
+            cartService.ClearCart(user.Cart.Id);
+        }
         orderRepository.Update(order);
+        
     }
 
     public void UpdateStatusToPaidOrComplete(Guid orderId, OrderStatus status)
