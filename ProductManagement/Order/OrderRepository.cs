@@ -60,6 +60,7 @@ public class OrderRepository(ApplicationDbContext dbContext) : GenericDbOperatio
         {
             OrderID = order.Id,
             OrderNumber = order.Identifier,
+            CustomerId = order.User.Id,
             CustomerName = order.User.GetFullName(),
             RecieverName = order.ReceieverName,
             RecieverContactNumber = order.ReceiverNumber,

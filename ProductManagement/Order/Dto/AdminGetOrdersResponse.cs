@@ -15,6 +15,7 @@ public class AdminGetOrdersResponse
 
     public List<AdminProductResponse> Products { get; set; } = new List<AdminProductResponse>();
     public string? ShipmentTrackingUrl { get; set; }
+    public Guid CustomerId { get; set; }
 }
 
 public class AdminProductResponse
