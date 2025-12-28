@@ -1,9 +1,11 @@
 using System.Security.Claims;
 using ProductManagement.Cart;
+using ProductManagement.Common.Model;
 using ProductManagement.Exception;
 using ProductManagement.Order.Dto;
 using ProductManagement.Order.Enum;
 using ProductManagement.Services.Common;
+using ProductManagement.Services.Paging.Model;
 
 namespace ProductManagement.Order;
 
@@ -151,5 +153,14 @@ public class OrderService(
         {
             throw new ApplicationException("Only Paid orders status can be changed to Shipped");
         }
+    }
+
+    public PaginationResult<AdminGetOrdersResponse> GetOrdersByStatus(OrderStatus orderStatus,PageData pageData)
+    {
+        if (orderStatus < OrderStatus.Confirmed)
+        {
+            throw new ApplicationException("This status is not allowed as filter");
+        }
+        return orderRepository.GetOrdersByStatus(orderStatus,pageData);
     }
 }

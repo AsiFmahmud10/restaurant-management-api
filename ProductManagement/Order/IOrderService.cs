@@ -1,5 +1,8 @@
 using System.Security.Claims;
+using ProductManagement.Common.Model;
 using ProductManagement.Order.Dto;
+using ProductManagement.Order.Enum;
+using ProductManagement.Services.Paging.Model;
 
 namespace ProductManagement.Order;
 
@@ -10,4 +13,5 @@ public interface IOrderService
     void UpdateStatusToPaid(Guid orderId);
     void UpdateStatusToComplete(Guid orderId);
     void UpdateStatusToShipped(Guid orderId,StatusToShippedRequest statusToShippedRequest);
+    PaginationResult<AdminGetOrdersResponse> GetOrdersByStatus(OrderStatus orderStatus,PageData pageData);
 }

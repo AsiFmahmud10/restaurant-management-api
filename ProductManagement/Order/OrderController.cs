@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProductManagement.Common.Model;
 using ProductManagement.Order.Dto;
+using ProductManagement.Order.Enum;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ProductManagement.Order;
@@ -62,7 +64,7 @@ public class OrderController(IOrderService orderService) : Controller
 
         orderService.UpdateStatusToShipped(orderId, statusToShippedRequest);
         return Ok("Order status updated to shipped successfully");
-    }
+    } 
 
     [Authorize(Roles = "admin")]
     [HttpPut("{orderId}/update-status/complete")]
@@ -76,5 +78,18 @@ public class OrderController(IOrderService orderService) : Controller
 
         orderService.UpdateStatusToComplete(orderId);
         return Ok("Order status updated to completed successfully");
+    }
+    
+    [Authorize(Roles = "admin")]
+    [HttpGet("/status/{status}")]
+    [SwaggerOperation("Admin can view Orders", description: "Admin can get Orders by status. Staus-Pending is not allowed")]
+    public IActionResult GetOrdersByStatus([FromRoute]OrderStatus status,[FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        return Ok(orderService.GetOrdersByStatus(status,new PageData(pageNumber, pageSize)));
     }
 }
