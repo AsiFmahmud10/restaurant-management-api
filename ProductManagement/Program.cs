@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Hangfire;
 using ProductManagement.Extension;
 using ProductManagement.Middilewire;
@@ -13,7 +14,7 @@ builder.Services
     .AddAuthenticationServices(builder)
     .AddHangFireServices(builder)
     .AddGlobalExceptionHandlerServices()
-    .AddControllers();
+    .AddControllerServices();
 
 
 var app = builder.Build();

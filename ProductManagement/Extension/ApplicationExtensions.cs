@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using ProductManagement.Cart;
 using ProductManagement.CartItem;
 using ProductManagement.Category;
@@ -64,7 +65,11 @@ public static class ApplicationExtensions
         return services.AddExceptionHandler<GlobalExceptionHandler>()
             .AddProblemDetails();
     }
-
+    public static IMvcBuilder AddControllerServices(this IServiceCollection services)
+    {
+        return services.AddControllers()
+            .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+    }
     public static IServiceCollection AddMiddleware(this IServiceCollection services)
     {
         services.AddScoped<TransactionMiddleware>();

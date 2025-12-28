@@ -15,6 +15,7 @@ public class Order : BaseEntity
 
     public string? Address { get; set; }
     public string? Note { get; set; }
+    public string? ReceieverName { get; set; }
     public string? ReceiverNumber { get; set; }
     public Payment? Payment { get; set; }
     public string? ShipmentTrackingUrl { get; set; }

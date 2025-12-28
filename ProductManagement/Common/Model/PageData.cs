@@ -1,4 +1,4 @@
-namespace ProductManagement.Services.Paging.Model;
+namespace ProductManagement.Common.Model;
 
 public class PageData(int pageNumber, int pageSize)
 {

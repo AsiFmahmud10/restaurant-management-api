@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using ProductManagement.Common.Model;
 using ProductManagement.Product.Dto;
 using ProductManagement.Services.Paging.Model;
 
