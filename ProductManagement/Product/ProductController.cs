@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProductManagement.Common.Model;
 using ProductManagement.Product.Dto;
-using ProductManagement.Services.Paging.Model;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ProductManagement.Product;
@@ -39,7 +39,7 @@ public class ProductController(IProductService productService) : Controller
 
     [AllowAnonymous]
     [HttpGet("category/{categoryId}")]
-    [SwaggerOperation("Get Products", description: "Get Products")]
+    [SwaggerOperation("Get Products by category", description: "Get Products by category")]
     public IActionResult GetProduct(Guid categoryId,[FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
     {
         if (!ModelState.IsValid)
