@@ -1,3 +1,4 @@
+using ProductManagement.Common.Model;
 using ProductManagement.Db;
 using ProductManagement.Product.Dto;
 using ProductManagement.Services.Paging.Model;
