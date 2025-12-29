@@ -82,7 +82,7 @@ public class OrderService(
             TransactionId = confirmOrderReq.TransactionId
         };
 
-        order.Confirm(confirmOrderReq.Address, payment, confirmOrderReq.ReceiverNumber, confirmOrderReq.Note);
+        order.Confirm(confirmOrderReq.Address, payment, confirmOrderReq.ReceiverNumber,confirmOrderReq.ReceiverName,confirmOrderReq.Note);
         if (user.Cart != null)
         {
             cartService.ClearCart(user.Cart.Id);
