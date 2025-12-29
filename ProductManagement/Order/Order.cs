@@ -31,7 +31,7 @@ public class Order : BaseEntity
     {
         return OrderItems.Sum(item => item.GetTotalPrice());
     }
-    public void Confirm(string address, Payment payment,string receiverNumber, string? note = null)
+    public void Confirm(string address, Payment payment,string receiverNumber,string receiverName, string? note = null)
     {
         if (Status != OrderStatus.Pending)
         {
@@ -43,11 +43,14 @@ public class Order : BaseEntity
         payment.Order = this;
         this.Note = note;
         ReceiverNumber = receiverNumber;
+        ReceieverName = receiverName;
 
         ArgumentException.ThrowIfNullOrWhiteSpace(this.Address, "Invalid Address");
         ArgumentNullException.ThrowIfNull(this.Payment, "Payment null");
         ArgumentException.ThrowIfNullOrWhiteSpace(this.ReceiverNumber, "Invalid ReceiverNumber");
-
+        ArgumentException.ThrowIfNullOrWhiteSpace(this.ReceiverNumber, "Invalid ReceiverNumber");
+        ArgumentException.ThrowIfNullOrWhiteSpace(this.ReceieverName, "Invalid ReceiverName");
+        
         this.Status = OrderStatus.Confirmed;
     }
 }
