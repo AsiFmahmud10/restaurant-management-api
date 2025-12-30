@@ -82,7 +82,8 @@ public class OrderService(
             TransactionId = confirmOrderReq.TransactionId
         };
 
-        order.Confirm(confirmOrderReq.Address, payment, confirmOrderReq.ReceiverNumber,confirmOrderReq.ReceiverName,confirmOrderReq.Note);
+        order.Confirm(confirmOrderReq.Address, payment, confirmOrderReq.ReceiverNumber, confirmOrderReq.ReceiverName,
+            confirmOrderReq.Note);
         if (user.Cart != null)
         {
             cartService.ClearCart(user.Cart.Id);
@@ -155,12 +156,23 @@ public class OrderService(
         }
     }
 
-    public PaginationResult<AdminGetOrdersResponse> GetOrdersByStatus(OrderStatus orderStatus,PageData pageData)
+    public PaginationResult<GetOrderResponse> GetOrdersByStatus(OrderStatus orderStatus, PageData pageData)
     {
         if (orderStatus < OrderStatus.Confirmed)
         {
             throw new ApplicationException("This status is not allowed as filter");
         }
-        return orderRepository.GetOrdersByStatus(orderStatus,pageData);
+
+        return orderRepository.GetOrdersByStatus(orderStatus, pageData);
+    }
+
+    public PaginationResult<GetOrderResponse> GetAuthenticatedCustomerOrders(ClaimsPrincipal claimsPrincipal,
+        PageData pageData)
+    {
+        var userId = AuthenticatedUserService.GetUserId(claimsPrincipal);
+        var user = userService.FindById(userId, user => user.Orders) ??
+                   throw new ResourceNotFoundException("User not found");
+
+        return orderRepository.GetOrdersByUserId(userId, pageData);
     }
 }

@@ -17,7 +17,7 @@ public class OrderRepository(ApplicationDbContext dbContext) : GenericDbOperatio
             .SingleOrDefault(order => order.Id == orderId);
     }
 
-    public PaginationResult<AdminGetOrdersResponse> GetOrdersByStatus(OrderStatus orderStatus, PageData pageData)
+    public PaginationResult<GetOrderResponse> GetOrdersByStatus(OrderStatus orderStatus, PageData pageData)
     {
         var pageNumber = pageData.PageNumber;
         var pageSize = pageData.PageSize;
@@ -36,7 +36,38 @@ public class OrderRepository(ApplicationDbContext dbContext) : GenericDbOperatio
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize).ToList();
 
-        return new PaginationResult<AdminGetOrdersResponse>
+        return new PaginationResult<GetOrderResponse>
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            TotalPage = totalPages,
+            Result = result,
+            DataCount = result.Count()
+        };
+    }
+    
+    // Return orders excluding pending orders
+    public PaginationResult<GetOrderResponse> GetOrdersByUserId(Guid userId, PageData pageData)
+    {
+        var pageNumber = pageData.PageNumber;
+        var pageSize = pageData.PageSize;
+        
+        
+        var query = dbContext.Orders
+            .Include(order => order.OrderItems)
+            .ThenInclude(orderItem => orderItem.Product)
+            .Include(order => order.User)
+            .Where(order => order.UserId == userId && order.Status != OrderStatus.Pending)
+            .OrderByDescending(order => order.ModifiedAt);
+
+        var totalRow = query.Count();
+        var totalPages = (int)Math.Ceiling(totalRow / (double)pageSize);
+
+        var result = query.Select(order => ConvertToAdminOrderResponse(order))
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize).ToList();
+
+        return new PaginationResult<GetOrderResponse>
         {
             PageNumber = pageNumber,
             PageSize = pageSize,
@@ -46,9 +77,9 @@ public class OrderRepository(ApplicationDbContext dbContext) : GenericDbOperatio
         };
     }
 
-    private static AdminGetOrdersResponse ConvertToAdminOrderResponse(Order order)
+    private static GetOrderResponse ConvertToAdminOrderResponse(Order order)
     {
-        List<AdminProductResponse> adminProductResponse = order.OrderItems.Select(item => new AdminProductResponse()
+        List<GetProductResponse> adminProductResponse = order.OrderItems.Select(item => new GetProductResponse()
         {
             Id = item.Product.Id,
             Name = item.Product.Name,
@@ -56,7 +87,7 @@ public class OrderRepository(ApplicationDbContext dbContext) : GenericDbOperatio
             UnitPriceAtOrderTime = item.PriceAtPurchaseTime
         }).ToList();
 
-        AdminGetOrdersResponse response = new AdminGetOrdersResponse
+        GetOrderResponse response = new GetOrderResponse
         {
             OrderID = order.Id,
             OrderNumber = order.Identifier,

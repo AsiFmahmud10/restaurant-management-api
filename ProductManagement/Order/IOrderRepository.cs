@@ -9,5 +9,6 @@ namespace ProductManagement.Order;
 public interface IOrderRepository : IGenericDbOperation<Order>
 {
     public Order? GetOrderDetails(Guid orderId);
-    public PaginationResult<AdminGetOrdersResponse> GetOrdersByStatus(OrderStatus orderStatus, PageData pageData);
+    public PaginationResult<GetOrderResponse> GetOrdersByStatus(OrderStatus orderStatus, PageData pageData);
+    public PaginationResult<GetOrderResponse> GetOrdersByUserId(Guid userId, PageData pageData);
 }

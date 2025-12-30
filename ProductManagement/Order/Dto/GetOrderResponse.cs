@@ -2,7 +2,7 @@ using ProductManagement.Order.Enum;
 
 namespace ProductManagement.Order.Dto;
 
-public class AdminGetOrdersResponse
+public class GetOrderResponse
 {
     public string CustomerName { get; set; }
     public string RecieverName { get; set; }
@@ -13,12 +13,12 @@ public class AdminGetOrdersResponse
     public OrderStatus OrderStatus { get; set; }
     public Guid OrderID { get; set; }
 
-    public List<AdminProductResponse> Products { get; set; } = new List<AdminProductResponse>();
+    public List<GetProductResponse> Products { get; set; } = new List<GetProductResponse>();
     public string? ShipmentTrackingUrl { get; set; }
     public Guid CustomerId { get; set; }
 }
 
-public class AdminProductResponse
+public class GetProductResponse
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
