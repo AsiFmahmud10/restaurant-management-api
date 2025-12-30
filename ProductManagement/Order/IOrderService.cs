@@ -13,5 +13,6 @@ public interface IOrderService
     void UpdateStatusToPaid(Guid orderId);
     void UpdateStatusToComplete(Guid orderId);
     void UpdateStatusToShipped(Guid orderId,StatusToShippedRequest statusToShippedRequest);
-    PaginationResult<AdminGetOrdersResponse> GetOrdersByStatus(OrderStatus orderStatus,PageData pageData);
+    PaginationResult<GetOrderResponse> GetOrdersByStatus(OrderStatus orderStatus,PageData pageData);
+    PaginationResult<GetOrderResponse> GetAuthenticatedCustomerOrders(ClaimsPrincipal httpContextUser, PageData pageData);
 }

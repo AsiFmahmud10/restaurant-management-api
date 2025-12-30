@@ -10,6 +10,20 @@ namespace ProductManagement.Order;
 [Route("api/v1/orders")]
 public class OrderController(IOrderService orderService) : Controller
 {
+       
+    [Authorize(Roles = "customer")]
+    [HttpGet()]
+    [SwaggerOperation("Customer can view their Orders", description: "Customers can view only orders that are not in the Pending status (Confirmed, Paid, Shipped, and Completed).")]
+    public IActionResult GetAuthenticatedCustomerOrders([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        return Ok(orderService.GetAuthenticatedCustomerOrders(HttpContext.User,new PageData(pageNumber, pageSize)));
+    }
+    
     [Authorize(Roles = "customer")]
     [HttpPost("add")]
     [SwaggerOperation("Add Order", description: "Add Order")]
@@ -92,4 +106,5 @@ public class OrderController(IOrderService orderService) : Controller
 
         return Ok(orderService.GetOrdersByStatus(status,new PageData(pageNumber, pageSize)));
     }
+ 
 }
