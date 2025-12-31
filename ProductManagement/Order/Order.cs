@@ -20,6 +20,11 @@ public class Order : BaseEntity
     public Payment? Payment { get; set; }
     public string? ShipmentTrackingUrl { get; set; }
 
+    public DateTime? StatusToConfirmedAt { get; set; }
+    public DateTime? StatusToPaidAt { get; set; }
+    public DateTime? StatusToShippedAt { get; set; }
+    public DateTime? StatusToCompletedAt { get; set; }
+
     public void AddIdentifier()
     {
         this.Identifier = Guid.CreateVersion7().ToString().Substring(0, 9);
@@ -31,7 +36,9 @@ public class Order : BaseEntity
     {
         return OrderItems.Sum(item => item.GetTotalPrice());
     }
-    public void Confirm(string address, Payment payment,string receiverNumber,string receiverName, string? note = null)
+
+    public void Confirm(string address, Payment payment, string receiverNumber, string receiverName,
+        string? note = null)
     {
         if (Status != OrderStatus.Pending)
         {
@@ -44,13 +51,14 @@ public class Order : BaseEntity
         this.Note = note;
         ReceiverNumber = receiverNumber;
         ReceieverName = receiverName;
+        StatusToConfirmedAt = DateTime.UtcNow;
 
         ArgumentException.ThrowIfNullOrWhiteSpace(this.Address, "Invalid Address");
         ArgumentNullException.ThrowIfNull(this.Payment, "Payment null");
         ArgumentException.ThrowIfNullOrWhiteSpace(this.ReceiverNumber, "Invalid ReceiverNumber");
         ArgumentException.ThrowIfNullOrWhiteSpace(this.ReceiverNumber, "Invalid ReceiverNumber");
         ArgumentException.ThrowIfNullOrWhiteSpace(this.ReceieverName, "Invalid ReceiverName");
-        
+
         this.Status = OrderStatus.Confirmed;
     }
 }

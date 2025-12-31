@@ -106,6 +106,7 @@ public class OrderService(
         });
 
         order.Status = OrderStatus.Paid;
+        order.StatusToPaidAt = DateTime.UtcNow;
         orderRepository.SaveChanges();
     }
 
@@ -117,6 +118,7 @@ public class OrderService(
         ValidationForSpecificStatus(order, OrderStatus.Completed);
 
         order.Status = OrderStatus.Completed;
+        order.StatusToCompletedAt = DateTime.UtcNow;
         orderRepository.SaveChanges();
     }
 
@@ -135,6 +137,7 @@ public class OrderService(
 
         order.ShipmentTrackingUrl = statusToShippedRequest.TrackingUrl;
         order.Status = OrderStatus.Shipped;
+        order.StatusToShippedAt = DateTime.UtcNow;
         orderRepository.Update(order);
     }
 
