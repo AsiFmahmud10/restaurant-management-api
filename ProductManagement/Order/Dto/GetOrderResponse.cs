@@ -16,6 +16,10 @@ public class GetOrderResponse
     public List<GetProductResponse> Products { get; set; } = new List<GetProductResponse>();
     public string? ShipmentTrackingUrl { get; set; }
     public Guid CustomerId { get; set; }
+    public DateTime StatusToConfirmedAt { get; set; }
+    public DateTime? StatusToPaidAt { get; set; }
+    public DateTime? StatusToShippedAt { get; set; }
+    public DateTime? StatusToCompletedAt { get; set; }
 }
 
 public class GetProductResponse

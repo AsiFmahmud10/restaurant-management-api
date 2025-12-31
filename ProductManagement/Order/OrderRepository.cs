@@ -32,7 +32,7 @@ public class OrderRepository(ApplicationDbContext dbContext) : GenericDbOperatio
         var totalRow = query.Count();
         var totalPages = (int)Math.Ceiling(totalRow / (double)pageSize);
 
-        var result = query.Select(order => ConvertToAdminOrderResponse(order))
+        var result = query.Select(order => ConvertToGetOrderResponse(order))
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize).ToList();
 
@@ -45,14 +45,14 @@ public class OrderRepository(ApplicationDbContext dbContext) : GenericDbOperatio
             DataCount = result.Count()
         };
     }
-    
+
     // Return orders excluding pending orders
     public PaginationResult<GetOrderResponse> GetOrdersByUserId(Guid userId, PageData pageData)
     {
         var pageNumber = pageData.PageNumber;
         var pageSize = pageData.PageSize;
-        
-        
+
+
         var query = dbContext.Orders
             .Include(order => order.OrderItems)
             .ThenInclude(orderItem => orderItem.Product)
@@ -63,7 +63,7 @@ public class OrderRepository(ApplicationDbContext dbContext) : GenericDbOperatio
         var totalRow = query.Count();
         var totalPages = (int)Math.Ceiling(totalRow / (double)pageSize);
 
-        var result = query.Select(order => ConvertToAdminOrderResponse(order))
+        var result = query.Select(order => ConvertToGetOrderResponse(order))
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize).ToList();
 
@@ -77,7 +77,7 @@ public class OrderRepository(ApplicationDbContext dbContext) : GenericDbOperatio
         };
     }
 
-    private static GetOrderResponse ConvertToAdminOrderResponse(Order order)
+    private static GetOrderResponse ConvertToGetOrderResponse(Order order)
     {
         List<GetProductResponse> adminProductResponse = order.OrderItems.Select(item => new GetProductResponse()
         {
@@ -98,6 +98,10 @@ public class OrderRepository(ApplicationDbContext dbContext) : GenericDbOperatio
             TotalPrice = order.GetTotalPrice(),
             Address = order.Address,
             OrderStatus = order.Status,
+            StatusToConfirmedAt = order.StatusToConfirmedAt.Value,
+            StatusToPaidAt = order.StatusToPaidAt,
+            StatusToShippedAt = order.StatusToPaidAt,
+            StatusToCompletedAt = order.StatusToCompletedAt,
             ShipmentTrackingUrl = order.ShipmentTrackingUrl,
             Products = adminProductResponse
         };
