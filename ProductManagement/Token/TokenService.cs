@@ -76,9 +76,10 @@ public class TokenService(AuthSettings authSettings,ITokenRepository tokenReposi
     {
         var claims = new List<Claim>()
         {
-            new Claim("userId", user.Id.ToString()),
-            new Claim("email", user.Email),
+            new Claim(ClaimTypes.Name, user.Id.ToString()),
+           
         };
+        claims.AddRange(user.Roles.Select(role => new Claim(ClaimTypes.Role, role.Name))); 
         
         return  this.GenerateToken(
             authSettings.AccessTokenSecretKey,

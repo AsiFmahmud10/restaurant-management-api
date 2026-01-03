@@ -1,3 +1,10 @@
+using System.Text.Json.Serialization;
+using ProductManagement.Cart;
+using ProductManagement.CartItem;
+using ProductManagement.Category;
+using ProductManagement.Order;
+using ProductManagement.Product;
+
 namespace ProductManagement.Extension;
 
 using System.Text;
@@ -58,7 +65,11 @@ public static class ApplicationExtensions
         return services.AddExceptionHandler<GlobalExceptionHandler>()
             .AddProblemDetails();
     }
-
+    public static IMvcBuilder AddControllerServices(this IServiceCollection services)
+    {
+        return services.AddControllers()
+            .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+    }
     public static IServiceCollection AddMiddleware(this IServiceCollection services)
     {
         services.AddScoped<TransactionMiddleware>();
@@ -74,16 +85,28 @@ public static class ApplicationExtensions
 
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IUserService, UserService>();
-        services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<ITokenRepository, TokenRepository>();
-        services.AddScoped<IRoleService, RoleService>();
-        services.AddScoped<IRoleRepository, RoleRepository>();
-        services.AddScoped<IPermissionService, PermissionService>();
-        services.AddScoped<IPermissionRepository, PermissionRepository>();
+        services.AddScoped<IAuthService, AuthService>()
+            .AddScoped<IUserService, UserService>()
+            .AddScoped<ITokenService, TokenService>()
+            .AddScoped<IRoleService, RoleService>()
+            .AddScoped<IProductService, ProductService>()
+            .AddScoped<IPermissionService, PermissionService>()
+            .AddScoped<ICategoryService, CategoryService>()
+            .AddScoped<ICartService, CartService>()
+            .AddScoped<ICartItemService, CartItemService>()
+            .AddScoped<IOrderService, OrderService>()
+            .AddScoped<IOrderRepository, OrderRepository>();
 
+
+        services.AddScoped<IRoleRepository, RoleRepository>()
+            .AddScoped<IPermissionRepository, PermissionRepository>()
+            .AddScoped<IUserRepository, UserRepository>()
+            .AddScoped<ITokenRepository, TokenRepository>()
+            .AddScoped<ICategoryRepository, CategoryRepository>()
+            .AddScoped<IProductRepository, ProductRepository>()
+            .AddScoped<ICartRepository, CartRepository>()
+            .AddScoped<ICartItemRepository, CartItemRepository>();
+        
         return services;
     }
 

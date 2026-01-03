@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using ProductManagement.Db;
 
 namespace ProductManagement.User;
@@ -5,10 +6,11 @@ namespace ProductManagement.User;
 public interface IUserService 
 {
     void Save(User user);
-    User? FindByEmail(string email);
-    
-    User? GetUserWithToken(string email);
+    User? FindByEmail(string email, params Expression<Func<User, object>>[] includes);
     void Update(User user);
-    User? FindById(Guid tokenUserId);
+    User? FindById(Guid id,params Expression<Func<User,object?>>[] includes);
     User? FindByPassword(string existedHashedPassword);
+    string AddRole(Guid userId, Guid roleId);
+    string RemoveRole(Guid userId, Guid roleId);
+    User? FindUserWithCartDetails(Guid userId);
 }

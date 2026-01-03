@@ -1,8 +1,10 @@
+using System.Linq.Expressions;
 using Hangfire;
 using Microsoft.AspNetCore.Hosting;
 using Moq;
 using ProductManagement.Auth;
 using ProductManagement.Auth.Dto;
+using ProductManagement.Cart;
 using ProductManagement.Exception;
 using ProductManagement.Role;
 using ProductManagement.Token;
@@ -15,6 +17,7 @@ public class AuthServiceTests
     private readonly Mock<IUserService> _userServiceMock;
     private readonly Mock<ITokenService> _tokenServiceMock;
     private readonly Mock<IRoleService> _roleServiceMock;
+    private readonly Mock<ICartService> _cartService;
     private readonly Mock<IBackgroundJobClient> _backgroundJobClientMock;
     private readonly Mock<IWebHostEnvironment> _envMock;
 
@@ -25,6 +28,7 @@ public class AuthServiceTests
         _userServiceMock = new Mock<IUserService>();
         _tokenServiceMock = new Mock<ITokenService>();
         _roleServiceMock = new Mock<IRoleService>();
+        _cartService = new Mock<ICartService>();
         _backgroundJobClientMock = new Mock<IBackgroundJobClient>();
         _envMock = new Mock<IWebHostEnvironment>();
 
@@ -32,6 +36,7 @@ public class AuthServiceTests
             _userServiceMock.Object,
             _tokenServiceMock.Object,
             _roleServiceMock.Object,
+            _cartService.Object,
             _backgroundJobClientMock.Object,
             _envMock.Object
         );
@@ -102,7 +107,7 @@ public class AuthServiceTests
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword("password123");
         var user = new User { Email = loginReq.Email, Password = hashedPassword };
 
-        _userServiceMock.Setup(s => s.GetUserWithToken(loginReq.Email)).Returns(user);
+        _userServiceMock.Setup(s => s.FindByEmail(loginReq.Email,It.IsAny<Expression<Func<User,object>>[]>())).Returns(user);
         _tokenServiceMock.Setup(s => s.GenerateAccessToken(user)).Returns("access123");
         _tokenServiceMock.Setup(s => s.GenerateRefreshToken()).Returns("refresh123");
 
@@ -121,7 +126,7 @@ public class AuthServiceTests
     {
         // Arrange
         var loginReq = new LoginReq { Email = "missing@example.com", Password = "password123" };
-        _userServiceMock.Setup(s => s.GetUserWithToken(loginReq.Email)).Returns((User?)null);
+        _userServiceMock.Setup(s => s.FindByEmail(loginReq.Email)).Returns((User?)null);
 
         // Act & Assert
         Assert.Throws<ResourceNotFoundException>(() => _authService.Login(loginReq));
@@ -135,10 +140,11 @@ public class AuthServiceTests
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword("password123");
         var user = new User { Email = loginReq.Email, Password = hashedPassword };
 
-        _userServiceMock.Setup(s => s.GetUserWithToken(loginReq.Email)).Returns(user);
+        _userServiceMock.Setup(s => s.FindByEmail(loginReq.Email,It.IsAny<Expression<Func<User,object>>[]>())).Returns(user);
 
         // Act & Assert
-        Assert.Throws<UnAuthorizedException>(() => _authService.Login(loginReq));
+        var exception = Assert.Throws<UnAuthorizedException>(() => _authService.Login(loginReq));
+        Assert.Equal("Passwords do not match", exception.Message);
     }
 
     [Fact]
@@ -149,7 +155,7 @@ public class AuthServiceTests
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword("password123");
         var user = new User { Email = loginReq.Email, Password = hashedPassword };
 
-        _userServiceMock.Setup(s => s.GetUserWithToken(loginReq.Email)).Returns(user);
+        _userServiceMock.Setup(s => s.FindByEmail(loginReq.Email,It.IsAny<Expression<Func<User,object>>[]>())).Returns(user);
         _tokenServiceMock.Setup(s => s.GenerateAccessToken(user)).Returns((string?)null);
         _tokenServiceMock.Setup(s => s.GenerateRefreshToken()).Returns("refresh123");
 
@@ -165,12 +171,13 @@ public class AuthServiceTests
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword("password123");
         var user = new User { Email = loginReq.Email, Password = hashedPassword };
 
-        _userServiceMock.Setup(s => s.GetUserWithToken(loginReq.Email)).Returns(user);
+        _userServiceMock.Setup(s => s.FindByEmail(loginReq.Email,It.IsAny<Expression<Func<User,object>>[]>())).Returns(user);
         _tokenServiceMock.Setup(s => s.GenerateAccessToken(user)).Returns("access123");
         _tokenServiceMock.Setup(s => s.GenerateRefreshToken()).Returns((string?)null);
 
         // Act & Assert
-        Assert.Throws<ApplicationException>(() => _authService.Login(loginReq));
+        var exception = Assert.Throws<ApplicationException>(() => _authService.Login(loginReq));
+        Assert.Equal("Refresh token was not created", exception.Message);
     }
 
     [Fact]
@@ -181,7 +188,7 @@ public class AuthServiceTests
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword("password123");
         var user = new User { Email = loginReq.Email, Password = hashedPassword };
 
-        _userServiceMock.Setup(s => s.GetUserWithToken(loginReq.Email)).Returns(user);
+        _userServiceMock.Setup(s => s.FindByEmail(loginReq.Email,It.IsAny<Expression<Func<User,object>>[]>())).Returns(user);
         _tokenServiceMock.Setup(s => s.GenerateAccessToken(user)).Returns("access123");
         _tokenServiceMock.Setup(s => s.GenerateRefreshToken()).Returns("refresh123");
 
@@ -193,8 +200,7 @@ public class AuthServiceTests
         Assert.Equal("refresh123", user.Tokens.First().Value);
         Assert.Equal(TokenType.Refresh, user.Tokens.First().TokenType);
     }
-
-    ///////////////////////
+    
     [Fact]
     public void RefreshToken_InvalidToken_ThrowsUnAuthorized()
     {
@@ -218,7 +224,7 @@ public class AuthServiceTests
 
         // Act & Assert
         var exception = Assert.Throws<UnAuthorizedException>(() => _authService.RefreshToken(req));
-        Assert.Equal("Token not found", exception.Message);
+        Assert.Equal("Refresh token not found", exception.Message);
     }
 
     [Fact]
@@ -234,7 +240,7 @@ public class AuthServiceTests
 
         // Act & Assert
         var exception = Assert.Throws<UnAuthorizedException>(() => _authService.RefreshToken(req));
-        Assert.Equal("User not found", exception.Message);
+        Assert.Equal("user not found", exception.Message);
     }
 
     [Fact]
@@ -249,7 +255,7 @@ public class AuthServiceTests
         _tokenServiceMock.Setup(s => s.GetByValueWithUser(req.RefreshToken)).Returns(tokenEntity);
         _userServiceMock.Setup(s => s.FindById(It.IsAny<Guid>())).Returns(user);
         _tokenServiceMock.Setup(s => s.GenerateAccessToken(user)).Returns((string?)null);
-        _tokenServiceMock.Setup(s => s.GenerateRefreshToken()).Returns("Token was not created");
+        _tokenServiceMock.Setup(s => s.GenerateRefreshToken()).Returns("Refresh Token");
 
         // Act & Assert
         var exception = Assert.Throws<UnAuthorizedException>(() => _authService.RefreshToken(req));
@@ -267,7 +273,7 @@ public class AuthServiceTests
         _tokenServiceMock.Setup(s => s.ValidateToken(req.RefreshToken)).Returns(true);
         _tokenServiceMock.Setup(s => s.GetByValueWithUser(req.RefreshToken)).Returns(tokenEntity);
         _userServiceMock.Setup(s => s.FindById(It.IsAny<Guid>())).Returns(user);
-        _tokenServiceMock.Setup(s => s.GenerateAccessToken(user)).Returns("new-access");
+        _tokenServiceMock.Setup(s => s.GenerateAccessToken(user)).Returns("new-access-token");
         _tokenServiceMock.Setup(s => s.GenerateRefreshToken()).Returns((string?)null);
 
         // Act & Assert

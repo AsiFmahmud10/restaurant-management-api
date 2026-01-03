@@ -9,9 +9,10 @@ public class OrderItem :  BaseEntity
     public Guid ProductId { get; set; }
     public Product Product { get; set; }
     public int Quantity { get; set; }
+    public decimal PriceAtPurchaseTime { get; set; }
 
     public decimal GetTotalPrice()
     {
-        return this.Quantity * Product.Price;
+        return this.Quantity * PriceAtPurchaseTime;
     }
 }

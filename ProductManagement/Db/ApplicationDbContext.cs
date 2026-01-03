@@ -1,5 +1,3 @@
-using ProductManagement.Product;
-
 namespace ProductManagement.Db;
 
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +8,8 @@ using Order;
 using Product;
 using Token;
 using Permission;
-
+using Category;
+using CartItem;
 public class ApplicationDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }
@@ -32,8 +31,8 @@ public class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<Order>()
             .HasOne(o => o.User)
-            .WithOne(user => user.Order)
-            .HasForeignKey<Order>(o => o.UserId);
+            .WithMany(user => user.Orders)
+            .HasForeignKey(o => o.UserId);
 
         modelBuilder.Entity<Order>()
             .HasMany(o => o.OrderItems)
@@ -58,6 +57,18 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(c => c.ProductId);
 
         modelBuilder.Entity<Category>()
+            .HasIndex(category => category.Name)
+            .IsUnique();
+        
+        modelBuilder.Entity<Product>()
+            .HasIndex(p => p.Name)
+            .IsUnique();
+        
+        modelBuilder.Entity<Product>()
+            .HasIndex(p => p.Code)
+            .IsUnique();
+        
+        modelBuilder.Entity<Category>()
             .HasMany(c => c.Products)
             .WithOne(p => p.Category)
             .HasForeignKey(p => p.CategoryId);
@@ -74,6 +85,19 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Role>()
             .HasMany(r => r.Permissions)
             .WithMany();
+        
+        modelBuilder.Entity<Order>()
+            .HasIndex(order => order.Identifier)
+            .IsUnique();
+        
+        modelBuilder.Entity<Payment>()
+            .HasOne(p => p.Order)
+            .WithOne(o => o.Payment)
+            .HasForeignKey<Payment>(p => p.OrderId);
+
+        modelBuilder.Entity<Payment>()
+            .HasIndex(payment => payment.TransactionId)
+            .IsUnique();
 
         base.OnModelCreating(modelBuilder);
     }

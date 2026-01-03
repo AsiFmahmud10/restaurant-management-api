@@ -12,8 +12,8 @@ using ProductManagement.Db;
 namespace ProductManagement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250831213716_Init_database")]
-    partial class Init_database
+    [Migration("20251227151841_add_receivername")]
+    partial class add_receivername
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,9 +53,6 @@ namespace ProductManagement.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool?>("IsMerged")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -63,15 +60,15 @@ namespace ProductManagement.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("Token")
-                        .HasColumnType("uuid");
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.ToTable("Carts");
                 });
 
-            modelBuilder.Entity("ProductManagement.Cart.CartItem", b =>
+            modelBuilder.Entity("ProductManagement.CartItem.CartItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -109,7 +106,7 @@ namespace ProductManagement.Migrations
                     b.ToTable("CartItems");
                 });
 
-            modelBuilder.Entity("ProductManagement.Order.Order", b =>
+            modelBuilder.Entity("ProductManagement.Category.Category", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -129,6 +126,57 @@ namespace ProductManagement.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("ProductManagement.Order.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Identifier")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ReceieverName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ReceiverNumber")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ShipmentTrackingUrl")
+                        .HasColumnType("text");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -137,8 +185,10 @@ namespace ProductManagement.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
+                    b.HasIndex("Identifier")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Orders");
                 });
@@ -166,6 +216,9 @@ namespace ProductManagement.Migrations
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uuid");
 
+                    b.Property<decimal>("PriceAtPurchaseTime")
+                        .HasColumnType("numeric");
+
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
 
@@ -179,6 +232,47 @@ namespace ProductManagement.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("ProductManagement.Order.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Media")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.HasIndex("TransactionId")
+                        .IsUnique();
+
+                    b.ToTable("Payment");
                 });
 
             modelBuilder.Entity("ProductManagement.Permission.Permission", b =>
@@ -208,35 +302,6 @@ namespace ProductManagement.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Permission");
-                });
-
-            modelBuilder.Entity("ProductManagement.Product.Category", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ModifiedBy")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("ProductManagement.Product.Product", b =>
@@ -285,9 +350,18 @@ namespace ProductManagement.Migrations
                     b.Property<bool>("Stock")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Tags")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Products");
                 });
@@ -437,7 +511,7 @@ namespace ProductManagement.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ProductManagement.Cart.CartItem", b =>
+            modelBuilder.Entity("ProductManagement.CartItem.CartItem", b =>
                 {
                     b.HasOne("ProductManagement.Cart.Cart", null)
                         .WithMany("CartItems")
@@ -457,8 +531,8 @@ namespace ProductManagement.Migrations
             modelBuilder.Entity("ProductManagement.Order.Order", b =>
                 {
                     b.HasOne("ProductManagement.User.User", "User")
-                        .WithOne("Order")
-                        .HasForeignKey("ProductManagement.Order.Order", "UserId")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -482,9 +556,20 @@ namespace ProductManagement.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("ProductManagement.Order.Payment", b =>
+                {
+                    b.HasOne("ProductManagement.Order.Order", "Order")
+                        .WithOne("Payment")
+                        .HasForeignKey("ProductManagement.Order.Payment", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("ProductManagement.Product.Product", b =>
                 {
-                    b.HasOne("ProductManagement.Product.Category", "Category")
+                    b.HasOne("ProductManagement.Category.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -533,19 +618,21 @@ namespace ProductManagement.Migrations
                     b.Navigation("CartItems");
                 });
 
-            modelBuilder.Entity("ProductManagement.Order.Order", b =>
-                {
-                    b.Navigation("OrderItems");
-                });
-
-            modelBuilder.Entity("ProductManagement.Product.Category", b =>
+            modelBuilder.Entity("ProductManagement.Category.Category", b =>
                 {
                     b.Navigation("Products");
                 });
 
+            modelBuilder.Entity("ProductManagement.Order.Order", b =>
+                {
+                    b.Navigation("OrderItems");
+
+                    b.Navigation("Payment");
+                });
+
             modelBuilder.Entity("ProductManagement.User.User", b =>
                 {
-                    b.Navigation("Order");
+                    b.Navigation("Orders");
 
                     b.Navigation("Tokens");
                 });
