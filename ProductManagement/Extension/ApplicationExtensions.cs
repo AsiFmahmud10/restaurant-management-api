@@ -145,6 +145,12 @@ public static class ApplicationExtensions
 
     public static IServiceCollection InitializeDatabase(this IServiceCollection services, WebApplicationBuilder builder)
     {
+        var superAdminCredentials = builder.Configuration.GetSection("SuperAdminCredentials");
+        var superAdminEmail = superAdminCredentials["email"] ?? throw new ApplicationException("Super Admin Credentials not found");
+        var superAdminPassword = superAdminCredentials["password"] ??  throw new ApplicationException("Super Admin Password not found");
+        
+        
+        
         services.AddDbContext<ApplicationDbContext>(optionsBuilder =>
         {
             if (builder.Environment.IsDevelopment())
@@ -158,7 +164,7 @@ public static class ApplicationExtensions
             {
                 // admin data seed
                 var isAdminExisted =
-                    dbContext.Set<User>().FirstOrDefault(user => user.Email.Equals("super.admin@omuk.com")) !=
+                    dbContext.Set<User>().FirstOrDefault(user => user.Email.Equals(superAdminEmail)) !=
                     null;
                 if (!isAdminExisted)
                 {
@@ -167,8 +173,8 @@ public static class ApplicationExtensions
                         Id = Guid.NewGuid(),
                         FirstName = "super",
                         LastName = "admin",
-                        Email = "super.admin@omuk.com",
-                        Password = "123"
+                        Email = superAdminEmail,
+                        Password = BCrypt.Net.BCrypt.HashPassword(superAdminPassword)
                     };
 
                     var adminRole = new Role() { Id = Guid.NewGuid(), Name = "admin" };
