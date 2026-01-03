@@ -102,14 +102,14 @@ public class AuthService(
         Token? token = tokenService.GetByValueWithUser(refreshTokenReq.RefreshToken);
         if (token is null)
         {
-            throw new Exception("");
+            throw new UnAuthorizedException("Refresh token not found");
         }
 
         User? user = userService.FindById(token.UserId);
 
         if (user is null)
         {
-            throw new Exception("");
+            throw new UnAuthorizedException("user not found");
         }
 
         string? accessToken = tokenService.GenerateAccessToken(user);
@@ -117,7 +117,7 @@ public class AuthService(
 
         if (accessToken == null || refreshToken == null)
         {
-            throw new Exception("Token was not created");
+            throw new UnAuthorizedException("Token was not created");
         }
 
         Token refreshTokenEntity = new Token()
